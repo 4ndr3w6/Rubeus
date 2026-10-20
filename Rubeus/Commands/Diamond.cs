@@ -56,10 +56,6 @@ namespace Rubeus.Commands
             {
                 domain = arguments["/domain"];
             }
-            if (arguments.ContainsKey("/opsec"))
-            {
-                opsec = true;
-            }
             if (arguments.ContainsKey("/dc"))
             {
                 dc = arguments["/dc"];
