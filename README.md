@@ -180,10 +180,10 @@ Rubeus is licensed under the BSD 3-Clause license.
 			Rubeus.exe diamond /tgtdeleg [/createnetonly:C:\Windows\System32\cmd.exe] [/outfile:FILENAME] [/ptt] [/luid] [/nowrap] [/krbkey:HASH] [/ticketuser:USERNAME] [/ticketuserid:USER_ID] [/groups:GROUP_IDS] [/sids:EXTRA_SIDS]
 
         Forge a diamond ticket using LDAP to gather the relevent information:
-            Rubeus.exe diamond /user:USER /password:PASSWORD </krbkey:HASH> /ldap /ldapuser:USER /ldappassword:PASSWORD [/ticketuser:USERNAME] [/ticketuserid:USER_ID] [/dc:DOMAIN_CONTROLLER] [/domain:DOMAIN] [/outfile:FILENAME] [/ptt] [/nowrap] [/opsec]
+            Rubeus.exe diamond /user:USER /password:PASSWORD </krbkey:HASH> /ldap /creduser:DOMAIN.FQDN\USER /credpassword:PASSWORD [/ticketuser:USERNAME] [/ticketuserid:USER_ID] [/dc:DOMAIN_CONTROLLER] [/domain:DOMAIN] [/outfile:FILENAME] [/ptt] [/nowrap] [/opsec]
  
         Forge a diamond service ticket:
-            Rubeus/exe diamond </ticket:BASE64 | /ticket:FILE.KIRBI> /service:SPN /servicekey:HASH [/ldap] [/ldapuser:USER] [/ldappassword:PASSWORD] [/ticketuser:USERNAME] [/ticketuserid:USER_ID] [/dc:DOMAIN_CONTROLLER] [/domain:DOMAIN] [/outfile:FILENAME] [/ptt] [/nowrap] [/opsec]
+            Rubeus.exe diamond </ticket:BASE64 | /ticket:FILE.KIRBI> /service:SPN /servicekey:HASH [/ldap] [/creduser:DOMAIN.FQDN\USER] [/credpassword:PASSWORD] [/ticketuser:USERNAME] [/ticketuserid:USER_ID] [/dc:DOMAIN_CONTROLLER] [/domain:DOMAIN] [/outfile:FILENAME] [/ptt] [/nowrap] [/opsec]
 
 
      Ticket management:
