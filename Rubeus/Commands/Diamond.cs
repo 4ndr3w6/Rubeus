@@ -240,6 +240,25 @@ namespace Rubeus.Commands
                 }
             }
             
+            // flags (issue #195): diamond previously ignored /flags and always forged a renewable ticket.
+            // Parse the comma-separated flag names (same as golden/silver) and apply them to the forged ticket.
+            Interop.TicketFlags flags = Interop.TicketFlags.empty;
+            if (arguments.ContainsKey("/flags"))
+            {
+                foreach (string flag in arguments["/flags"].Split(','))
+                {
+                    Interop.TicketFlags result;
+                    if (Interop.TicketFlags.TryParse(flag, out result))
+                    {
+                        flags |= result;
+                    }
+                    else
+                    {
+                        Console.WriteLine("[X] Error the following flag name passed is not valid: {0}", flag);
+                    }
+                }
+            }
+
             if (tgtdeleg)
             {
                 KRB_CRED cred = null;
@@ -252,18 +271,18 @@ namespace Rubeus.Commands
                     Console.WriteLine("[X] Unable to retrieve TGT using tgtdeleg");
                     return;
                 }
-                ForgeTickets.ModifyTicket(cred, krbKey, krbKey, outfile, ldap, ldapuser, ldappassword, dc, domain, ptt, luid, ticketUser, groups, ticketUserId, sids);
+                ForgeTickets.ModifyTicket(cred, krbKey, krbKey, outfile, ldap, ldapuser, ldappassword, dc, domain, ptt, luid, ticketUser, groups, ticketUserId, sids, ticketFlags: flags);
             }
             else if (null!=kirbi)
             {
-                ForgeTickets.ModifyTicket(kirbi, serviceKey, krbKey, outfile, ldap, ldapuser, ldappassword, dc, domain, ptt, luid, ticketUser, groups, ticketUserId, sids);
+                ForgeTickets.ModifyTicket(kirbi, serviceKey, krbKey, outfile, ldap, ldapuser, ldappassword, dc, domain, ptt, luid, ticketUser, groups, ticketUserId, sids, ticketFlags: flags);
             }
             else
             {
                 if (String.IsNullOrEmpty(certificate))
-                    ForgeTickets.DiamondTicket(user, domain, hash, encType, outfile, opsec, ldap, ptt, ldapuser, ldappassword, dc, luid, krbKey, ticketUser, groups, ticketUserId, sids);
+                    ForgeTickets.DiamondTicket(user, domain, hash, encType, outfile, opsec, ldap, ptt, ldapuser, ldappassword, dc, luid, krbKey, ticketUser, groups, ticketUserId, sids, ticketFlags: flags);
                 else
-                    ForgeTickets.DiamondTicket(user, domain, certificate, password, encType, outfile, opsec, ldap, ptt, ldapuser, ldappassword, dc, luid, krbKey, ticketUser, groups, ticketUserId, sids);
+                    ForgeTickets.DiamondTicket(user, domain, certificate, password, encType, outfile, opsec, ldap, ptt, ldapuser, ldappassword, dc, luid, krbKey, ticketUser, groups, ticketUserId, sids, ticketFlags: flags);
             }
             
             return;

