@@ -236,6 +236,7 @@ namespace Rubeus.Commands
                 else
                 {
                     Console.WriteLine("\r\n[X] /ticket:X must either be a .kirbi file or a base64 encoded .kirbi\r\n");
+                    return;
                 }
             }
             
